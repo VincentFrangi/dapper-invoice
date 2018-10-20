@@ -180,10 +180,44 @@
     \end{longtable}
 }
 
+% Simple item line : date | project | description | Amount
+\newenvironment{ItemizationWithProject}{
+    \setcounter{colskipcount}{3}
+    \setlength\LTleft{0pt}
+    \setlength\LTright{0pt}
+    \begin{longtable}{c l @{\hspace{1.5em}} p{0.6\textwidth} r}
+        \hline
+        \noalign{\smallskip}
+        {\itemizationHeaderStyle Date} &
+        {\itemizationHeaderStyle Project} &
+        {\itemizationHeaderStyle Description}&
+        {\itemizationHeaderStyle Amount}
+        \\
+        \noalign{\smallskip}
+        \hline
+        \noalign{\bigskip}
+        \endhead
+        \noalign{\bigskip}
+        \hline
+        \endfoot
+        \endlastfoot
+        }{
+    \end{longtable}
+}
+
 \gdef\InvoiceTotal{0}
 
 \newcommand*{\calcamount}[2]{%
     \FPmul\t{#1}{#2}%
+    \formatcurrency{\t}%
+%
+    \FPadd\gt{\InvoiceTotal}{\t}%
+    \global\let\InvoiceTotal\gt%
+}
+
+
+\newcommand*{\calcamountSimple}[1]{%
+    \FPmul\t{#1}{1}%
     \formatcurrency{\t}%
 %
     \FPadd\gt{\InvoiceTotal}{\t}%
@@ -242,6 +276,18 @@
     \noalign{\medskip}
 }
 
+% Simple item line : date | amount | project
+\newcommand{\lineitempSimple}[4]{
+    {\itemizationRowStyle #1} &
+    {\itemizationRowStyle #3} &
+    \begin{minipage}[t]{0.5\textwidth}
+        \begin{itemize}[leftmargin=0pt, labelsep=1pt, itemsep=0pt] \itemizationRowStyle #4 \end{itemize}
+    \end{minipage} &
+    {\itemizationRowStyle \currencysym\calcamountSimple{#2}}
+    \\
+    \noalign{\medskip}
+}
+
 \newcommand{\beginsummary}{
     \noalign{\bigskip}
     \hline
@@ -249,7 +295,7 @@
 }
 
 \newcommand*{\summaryline}[2]{
-    \multicolumn{\thecolskipcount}{r}{\itemizationHeaderStyle #1} & #2 \\
+    \multicolumn{\value{colskipcount}}{r}{\itemizationHeaderStyle #1} & #2 \\
 }
 
 \newcommand*{\tikzmark}[1]{\tikz[overlay,remember picture] \node ({#1}) {};}
