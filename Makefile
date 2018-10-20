@@ -4,7 +4,7 @@
 
 .SUFFIXES: .tex .pdf
 
-.PHONY : default install uninstall clean pdf watch
+.PHONY : default install uninstall clean pdf watch launch
 
 REPORT = example
 SHOW = $(REPORT)
@@ -43,3 +43,7 @@ clean:
 	rm -rf $(REPORT:%=%.ind) $(REPORT:%=%.ilg) $(REPORT:%=%.nls)
 	rm -rf $(REPORT:%=%.nlo) $(REPORT:%=%.out)
 	rm -rf $(REPORT:%=%.pdf)
+
+launch:
+	make
+	evince $(REPORT:%=%.pdf)
